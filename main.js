@@ -1,5 +1,8 @@
 const cpu = new Intel8080();
+const fpu = new FPU();
 const assembler = new Assembler8080();
+
+cpu.fpu = fpu;
 
 let runInterval = null;
 let memoryStart = 0;
@@ -26,6 +29,11 @@ function updateUI() {
 
     document.getElementById('status-badge').textContent = cpu.halted ? 'Halted' : (runInterval ? 'Running' : 'Idle');
     document.getElementById('status-badge').style.backgroundColor = cpu.halted ? '#fee2e2' : (runInterval ? '#f0fdf4' : '#e2e8f0');
+
+    if (document.getElementById('reg-fp0')) document.getElementById('reg-fp0').textContent = fpu.fp0;
+    if (document.getElementById('reg-fp1')) document.getElementById('reg-fp1').textContent = fpu.fp1;
+    if (document.getElementById('reg-fp-res')) document.getElementById('reg-fp-res').textContent = fpu.result;
+    if (document.getElementById('reg-fp-status')) document.getElementById('reg-fp-status').textContent = fpu.status === 0 ? '0 (OK)' : '1 (ERR)';
 
     renderMemory();
     renderStack();
@@ -163,6 +171,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
         runInterval = null;
     }
     cpu.reset();
+    fpu.reset();
 
     // Clear assembler output
     const output = document.getElementById('assembler-output');
